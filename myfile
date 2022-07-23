@@ -1,14 +1,44 @@
-1st code from mumbai
+resource "google_service_account" "default" {
+  account_id   = "gcp-demo-9799"
+  display_name = "Service Account"
+}
 
-2nd code from mumbai
+resource "google_compute_instance" "default" {
+  name         = "lz-test"
+  machine_type = "e2-medium"
+  zone         = "us-central1-a"
 
-3rd code from mumbai
+  tags = ["foo", "bar"]
 
-1st code from london
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-9"
+    }
+  }
 
-sekhar code from mumbai
+  // Local SSD disk
+  scratch_disk {
+    interface = "SCSI"
+  }
 
-sai code from london
+  network_interface {
+    network = "default"
 
-hi sekhar from mumbai
+    access_config {
+      // Ephemeral public IP
+    }
+  }
+
+  metadata = {
+    foo = "bar"
+  }
+
+  metadata_startup_script = "echo hi > /test.txt"
+
+  service_account {
+    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
+    email  = google_service_account.default.email
+    scopes = ["cloud-platform"]
+  }
+}
 
